@@ -12,6 +12,7 @@ const bulkScript = path.join(__dirname, "bulk-search-cards.js");
 const extractAndSearchScript = path.join(__dirname, "extract-and-search-cards.js");
 const judgeAndReplaceScript = path.join(__dirname, "judge-and-replace.js");
 const formatConverterScript = path.join(__dirname, "format-converter.js");
+const faqSearchScript = path.join(__dirname, "search-faq.js");
 const npxPath = "node";
 const tsxArgs = [cliScript];
 const server = new McpServer({ name: "ygo-search-card", version: "1.0.0" });
@@ -173,6 +174,29 @@ server.tool("convert_file_formats", `Convert between JSON, JSONL, JSONC, and YAM
         ...conversions.map(c => `${c.input}:${c.output}`)
     ];
     return executeCLI(args);
+});
+// FAQ search tool
+server.tool("search_faq", `Search Yu-Gi-Oh! FAQ database by FAQ ID, card ID, question text, or answer text. Returns FAQs with embedded card information for all cards mentioned in the Q&A.`, {
+    faqId: z.number().optional().describe("Search by specific FAQ ID"),
+    cardId: z.number().optional().describe("Search FAQs that mention this card ID"),
+    question: z.string().optional().describe("Search in question text (supports wildcards with *)"),
+    answer: z.string().optional().describe("Search in answer text (supports wildcards with *)"),
+    limit: z.number().default(50).describe("Maximum number of results (default: 50)"),
+    flagAllowWild: z.boolean().default(true).describe("Enable wildcard search with * (default: true)"),
+    outputPath: z.string().optional().describe("Output file path (e.g., 'result.json' or 'result.jsonl')"),
+    outputDir: z.string().optional().describe("Output directory (defaults to current directory or YGO_OUTPUT_DIR)")
+}, async ({ faqId, cardId, question, answer, limit, flagAllowWild, outputPath, outputDir }) => {
+    const params = { limit, flagAllowWild };
+    if (faqId !== undefined)
+        params.faqId = faqId;
+    if (cardId !== undefined)
+        params.cardId = cardId;
+    if (question)
+        params.question = question;
+    if (answer)
+        params.answer = answer;
+    const args = [faqSearchScript, JSON.stringify(params)];
+    return executeAndSave(args, outputPath, outputDir);
 });
 const transport = new StdioServerTransport();
 await server.connect(transport);
