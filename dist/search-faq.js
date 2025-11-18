@@ -152,18 +152,124 @@ export async function searchFAQ(params) {
     }
     return results;
 }
+function formatOutput(results, options) {
+    const { fcols, cols, format = 'json' } = options;
+    // Apply random/range/all filtering
+    let filteredResults = [...results];
+    if (options.range) {
+        const [start, end] = options.range;
+        filteredResults = filteredResults.filter(r => r.faq.faqId >= start && r.faq.faqId <= end);
+    }
+    if (options.random && filteredResults.length > 0) {
+        filteredResults = filteredResults
+            .sort(() => Math.random() - 0.5)
+            .slice(0, options.all ? filteredResults.length : results.length);
+    }
+    // Build output based on format
+    if (format === 'json') {
+        if (!fcols && !cols) {
+            return JSON.stringify(filteredResults, null, 2);
+        }
+        const formatted = filteredResults.map(r => {
+            const output = {};
+            if (fcols) {
+                for (const col of fcols) {
+                    if (col in r.faq)
+                        output[col] = r.faq[col];
+                }
+            }
+            else {
+                Object.assign(output, r.faq);
+            }
+            if (cols) {
+                output.questionCards = r.faq.questionCards.map(c => filterCardCols(c, cols));
+                output.answerCards = r.faq.answerCards.map(c => filterCardCols(c, cols));
+            }
+            return output;
+        });
+        return JSON.stringify(formatted, null, 2);
+    }
+    if (format === 'jsonl') {
+        return filteredResults.map(r => {
+            if (!fcols && !cols)
+                return JSON.stringify(r);
+            const output = {};
+            if (fcols) {
+                for (const col of fcols) {
+                    if (col in r.faq)
+                        output[col] = r.faq[col];
+                }
+            }
+            else {
+                Object.assign(output, r.faq);
+            }
+            if (cols) {
+                output.questionCards = r.faq.questionCards.map(c => filterCardCols(c, cols));
+                output.answerCards = r.faq.answerCards.map(c => filterCardCols(c, cols));
+            }
+            return JSON.stringify(output);
+        }).join('\n');
+    }
+    if (format === 'csv' || format === 'tsv') {
+        const delimiter = format === 'csv' ? ',' : '\t';
+        const effectiveFcols = fcols || ['faqId', 'question', 'answer', 'updatedAt'];
+        const lines = [effectiveFcols.join(delimiter)];
+        for (const r of filteredResults) {
+            const values = effectiveFcols.map(col => {
+                const val = r.faq[col];
+                return typeof val === 'string' ? `"${val.replace(/"/g, '""')}"` : val;
+            });
+            lines.push(values.join(delimiter));
+        }
+        return lines.join('\n');
+    }
+    return JSON.stringify(filteredResults, null, 2);
+}
+function filterCardCols(card, cols) {
+    const filtered = {};
+    for (const col of cols) {
+        if (col in card)
+            filtered[col] = card[col];
+    }
+    return filtered;
+}
 if (import.meta.url === `file://${process.argv[1]}`) {
     const args = process.argv.slice(2);
     if (args.length === 0) {
-        console.error('Usage: node search-faq.js <params_json>');
+        console.error('Usage: node search-faq.js <params_json> [options]');
         console.error('Example: node search-faq.js \'{"cardId":6808}\'');
-        console.error('Example: node search-faq.js \'{"question":"シンクロ召喚"}\'');
+        console.error('Example: node search-faq.js \'{"cardId":6808}\' --fcol faqId,question --col name,atk');
+        console.error('Example: node search-faq.js \'{"cardId":6808}\' --format csv');
         process.exit(1);
     }
     try {
         const params = JSON.parse(args[0]);
+        const options = {};
+        // Parse CLI options
+        for (let i = 1; i < args.length; i++) {
+            const arg = args[i];
+            if (arg === '--fcol' && args[i + 1]) {
+                options.fcols = args[++i].split(',');
+            }
+            else if (arg === '--col' && args[i + 1]) {
+                options.cols = args[++i].split(',');
+            }
+            else if (arg === '--format' && args[i + 1]) {
+                options.format = args[++i];
+            }
+            else if (arg === '--random') {
+                options.random = true;
+            }
+            else if (arg === '--range' && args[i + 1]) {
+                const [start, end] = args[++i].split('-').map(Number);
+                options.range = [start, end];
+            }
+            else if (arg === '--all') {
+                options.all = true;
+            }
+        }
         const results = await searchFAQ(params);
-        console.log(JSON.stringify(results, null, 2));
+        console.log(formatOutput(results, options));
     }
     catch (err) {
         console.error('Error:', err);

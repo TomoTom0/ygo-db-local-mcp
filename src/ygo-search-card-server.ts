@@ -234,10 +234,16 @@ server.tool(
     answer: z.string().optional().describe("Search in answer text (supports wildcards with *)"),
     limit: z.number().default(50).describe("Maximum number of results (default: 50)"),
     flagAllowWild: z.boolean().default(true).describe("Enable wildcard search with * (default: true)"),
+    fcols: z.string().optional().describe("FAQ columns to output (comma-separated: faqId,question,answer,updatedAt)"),
+    cols: z.string().optional().describe("Card columns to output (comma-separated: cardId,name,atk,def,race,text,etc.)"),
+    format: z.enum(['json', 'csv', 'tsv', 'jsonl']).optional().describe("Output format (default: json)"),
+    random: z.boolean().optional().describe("Randomly select from results"),
+    range: z.string().optional().describe("Filter by FAQ ID range (e.g., '100-200')"),
+    all: z.boolean().optional().describe("Return all results (use with range)"),
     outputPath: z.string().optional().describe("Output file path (e.g., 'result.json' or 'result.jsonl')"),
     outputDir: z.string().optional().describe("Output directory (defaults to current directory or YGO_OUTPUT_DIR)")
   },
-  async ({ faqId, cardId, cardName, cardFilter, question, answer, limit, flagAllowWild, outputPath, outputDir }) => {
+  async ({ faqId, cardId, cardName, cardFilter, question, answer, limit, flagAllowWild, fcols, cols, format, random, range, all, outputPath, outputDir }) => {
     const params: any = { limit, flagAllowWild };
     if (faqId !== undefined) params.faqId = faqId;
     if (cardId !== undefined) params.cardId = cardId;
@@ -247,6 +253,13 @@ server.tool(
     if (answer) params.answer = answer;
     
     const args = [faqSearchScript, JSON.stringify(params)];
+    if (fcols) args.push('--fcol', fcols);
+    if (cols) args.push('--col', cols);
+    if (format) args.push('--format', format);
+    if (random) args.push('--random');
+    if (range) args.push('--range', range);
+    if (all) args.push('--all');
+    
     return executeAndSave(args, outputPath, outputDir);
   }
 );

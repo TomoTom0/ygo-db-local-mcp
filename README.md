@@ -106,8 +106,14 @@ ygo_faq_search '{"faqId":100}'
 ygo_faq_search '{"cardId":6808,"limit":5}'
 ygo_faq_search '{"cardName":"青眼*","limit":10}'
 ygo_faq_search '{"cardFilter":{"race":"dragon","levelValue":"8"},"limit":5}'
-ygo_faq_search '{"question":"シンクロ召喚","limit":10}'
+ygo_faq_search '{"question":"*シンクロ召喚*"}'
 ygo_faq_search '{"answer":"*無効*","limit":20}'
+
+# FAQ search with output options
+ygo_faq_search '{"cardId":6808}' --fcol faqId,question
+ygo_faq_search '{"cardId":6808}' --col name,atk,def
+ygo_faq_search '{"cardName":"青眼*"}' --format csv
+ygo_faq_search '{"cardFilter":{"race":"dragon"}}' --random --limit 5
 
 # Convert file formats
 ygo_convert input.json:output.jsonl
