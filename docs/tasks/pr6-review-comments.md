@@ -36,7 +36,7 @@ PR #6 に対するレビューコメントへの対応タスクリスト。
 
 - [x] npm run build が成功する
 - [ ] npm test が成功する (integration testはdata filesが必要)
-- [ ] 各レビューコメントに対して返信済み
+- [x] 各レビューコメントに対して返信済み (2025-11-18)
 - [ ] GitHub Actions が成功する
 
 ## 備考
