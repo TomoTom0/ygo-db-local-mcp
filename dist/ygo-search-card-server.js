@@ -176,21 +176,27 @@ server.tool("convert_file_formats", `Convert between JSON, JSONL, JSONC, and YAM
     return executeCLI(args);
 });
 // FAQ search tool
-server.tool("search_faq", `Search Yu-Gi-Oh! FAQ database by FAQ ID, card ID, question text, or answer text. Returns FAQs with embedded card information for all cards mentioned in the Q&A.`, {
+server.tool("search_faq", `Search Yu-Gi-Oh! FAQ database by FAQ ID, card ID, card name/spec, question text, or answer text. Returns FAQs with embedded card information for all cards mentioned in the Q&A.`, {
     faqId: z.number().optional().describe("Search by specific FAQ ID"),
     cardId: z.number().optional().describe("Search FAQs that mention this card ID"),
+    cardName: z.string().optional().describe("Search FAQs by card name (supports wildcards with *)"),
+    cardFilter: z.record(z.any()).optional().describe("Search FAQs by card specifications (e.g., {race:'dragon', levelValue:'8', atk:'3000'})"),
     question: z.string().optional().describe("Search in question text (supports wildcards with *)"),
     answer: z.string().optional().describe("Search in answer text (supports wildcards with *)"),
     limit: z.number().default(50).describe("Maximum number of results (default: 50)"),
     flagAllowWild: z.boolean().default(true).describe("Enable wildcard search with * (default: true)"),
     outputPath: z.string().optional().describe("Output file path (e.g., 'result.json' or 'result.jsonl')"),
     outputDir: z.string().optional().describe("Output directory (defaults to current directory or YGO_OUTPUT_DIR)")
-}, async ({ faqId, cardId, question, answer, limit, flagAllowWild, outputPath, outputDir }) => {
+}, async ({ faqId, cardId, cardName, cardFilter, question, answer, limit, flagAllowWild, outputPath, outputDir }) => {
     const params = { limit, flagAllowWild };
     if (faqId !== undefined)
         params.faqId = faqId;
     if (cardId !== undefined)
         params.cardId = cardId;
+    if (cardName)
+        params.cardName = cardName;
+    if (cardFilter)
+        params.cardFilter = cardFilter;
     if (question)
         params.question = question;
     if (answer)

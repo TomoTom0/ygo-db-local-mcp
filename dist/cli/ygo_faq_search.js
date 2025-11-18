@@ -9,16 +9,21 @@ Search FAQ database by various criteria.
 Examples:
   ygo_faq_search '{"faqId":10}'
   ygo_faq_search '{"cardId":6808,"limit":5}'
+  ygo_faq_search '{"cardName":"青眼の白龍","limit":5}'
+  ygo_faq_search '{"cardName":"青眼*","limit":10}'
+  ygo_faq_search '{"cardFilter":{"race":"dragon","levelValue":"8"},"limit":5}'
   ygo_faq_search '{"question":"シンクロ召喚"}'
   ygo_faq_search '{"answer":"効果を無効化"}'
   ygo_faq_search '{"question":"*墓地*","limit":10}'
 
 Parameters (JSON):
-  faqId        - Search by FAQ ID
-  cardId       - Search by card ID (finds FAQs mentioning this card)
-  question     - Search in question text (supports wildcards)
-  answer       - Search in answer text (supports wildcards)
-  limit        - Maximum results (default: 50)
+  faqId         - Search by FAQ ID
+  cardId        - Search by card ID (finds FAQs mentioning this card)
+  cardName      - Search by card name (supports wildcards with *)
+  cardFilter    - Search by card specs (e.g., {"race":"dragon","levelValue":"8"})
+  question      - Search in question text (supports wildcards)
+  answer        - Search in answer text (supports wildcards)
+  limit         - Maximum results (default: 50)
   flagAllowWild - Enable wildcard search (default: true)
 
 Returns:

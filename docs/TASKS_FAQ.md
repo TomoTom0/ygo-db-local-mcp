@@ -25,10 +25,13 @@
   - Include extracted card info in all results
 
 ## Phase 3: Advanced Features
-- [ ] search_faq_by_card_spec
+- [x] search_faq_by_card_spec
   - Search cards by spec (level, type, etc.)
   - Find FAQs containing those cards
-  - Cross-reference with cards-all.tsv
+  - Cross-reference with cards-all.tsv via card search
+- [x] search_faq_by_card_name
+  - Search by card name with wildcard support
+  - Integrates with existing card search
 - [ ] bulk_search_faq
   - Multiple FAQ queries in one call
   - Optimize for batch processing
@@ -79,6 +82,18 @@ ygo_faq_search '{"faqId":100}'
 
 # Search by card ID (finds all FAQs mentioning this card)
 ygo_faq_search '{"cardId":6808,"limit":5}'
+
+# Search by card name (exact)
+ygo_faq_search '{"cardName":"青眼の白龍","limit":5}'
+
+# Search by card name (wildcard)
+ygo_faq_search '{"cardName":"青眼*","limit":10}'
+ygo_faq_search '{"cardName":"*ドラゴン","limit":10}'
+
+# Search by card specifications
+ygo_faq_search '{"cardFilter":{"race":"dragon","levelValue":"8"},"limit":5}'
+ygo_faq_search '{"cardFilter":{"cardType":"spell","spellEffectType":"quick"},"limit":5}'
+ygo_faq_search '{"cardFilter":{"atk":"3000","def":"2500"},"limit":5}'
 
 # Search in questions
 ygo_faq_search '{"question":"シンクロ召喚","limit":10}'

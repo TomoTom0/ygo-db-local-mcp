@@ -1,10 +1,17 @@
 #!/usr/bin/env node
 import { loadFAQIndex, getCardsByIds, extractCardReferences } from './utils/faq-loader.js'
 import { FAQWithCards, FAQSearchResult } from './types/faq.js'
+import { spawn } from 'child_process'
+import path from 'path'
+import url from 'url'
+
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
 
 interface SearchFAQParams {
   faqId?: number
   cardId?: number
+  cardName?: string
+  cardFilter?: Record<string, any>
   question?: string
   answer?: string
   limit?: number
@@ -51,8 +58,50 @@ async function enrichFAQWithCards(faq: any): Promise<FAQWithCards> {
   }
 }
 
+async function searchCardsByFilter(filter: Record<string, any>): Promise<number[]> {
+  return new Promise((resolve, reject) => {
+    const searchScript = path.join(__dirname, 'search-cards.js')
+    const args = [searchScript, JSON.stringify(filter), 'cols=cardId']
+    
+    const child = spawn('node', args, { stdio: ['ignore', 'pipe', 'pipe'] })
+    let stdout = ''
+    let stderr = ''
+    
+    child.stdout?.on('data', (data) => { stdout += data })
+    child.stderr?.on('data', (data) => { stderr += data })
+    
+    child.on('close', (code) => {
+      if (code !== 0) {
+        reject(new Error(`Card search failed: ${stderr}`))
+        return
+      }
+      
+      try {
+        const lines = stdout.trim().split('\n').filter(line => line.trim())
+        const cardIds: number[] = []
+        
+        for (const line of lines) {
+          try {
+            const obj = JSON.parse(line)
+            const cardId = parseInt(obj.cardId)
+            if (!isNaN(cardId)) {
+              cardIds.push(cardId)
+            }
+          } catch {
+            // Skip invalid JSON lines
+          }
+        }
+        
+        resolve(cardIds)
+      } catch (err) {
+        reject(err)
+      }
+    })
+  })
+}
+
 export async function searchFAQ(params: SearchFAQParams): Promise<FAQSearchResult[]> {
-  const { faqId, cardId, question, answer, limit = 50, flagAllowWild = true } = params
+  const { faqId, cardId, cardName, cardFilter, question, answer, limit = 50, flagAllowWild = true } = params
   const index = await loadFAQIndex()
   const results: FAQSearchResult[] = []
   
@@ -68,6 +117,50 @@ export async function searchFAQ(params: SearchFAQParams): Promise<FAQSearchResul
   if (cardId !== undefined) {
     const faqIds = index.byCardId.get(cardId) || []
     for (const id of faqIds.slice(0, limit)) {
+      const faq = index.byId.get(id)
+      if (faq) {
+        const enriched = await enrichFAQWithCards(faq)
+        results.push({ faq: enriched })
+      }
+    }
+    return results
+  }
+  
+  if (cardName !== undefined) {
+    const cardIds = await searchCardsByFilter({ name: cardName })
+    const faqIdSet = new Set<number>()
+    
+    for (const cid of cardIds) {
+      const faqIds = index.byCardId.get(cid) || []
+      for (const fid of faqIds) {
+        faqIdSet.add(fid)
+      }
+    }
+    
+    const sortedFaqIds = Array.from(faqIdSet).sort((a, b) => a - b)
+    for (const id of sortedFaqIds.slice(0, limit)) {
+      const faq = index.byId.get(id)
+      if (faq) {
+        const enriched = await enrichFAQWithCards(faq)
+        results.push({ faq: enriched })
+      }
+    }
+    return results
+  }
+  
+  if (cardFilter !== undefined) {
+    const cardIds = await searchCardsByFilter(cardFilter)
+    const faqIdSet = new Set<number>()
+    
+    for (const cid of cardIds) {
+      const faqIds = index.byCardId.get(cid) || []
+      for (const fid of faqIds) {
+        faqIdSet.add(fid)
+      }
+    }
+    
+    const sortedFaqIds = Array.from(faqIdSet).sort((a, b) => a - b)
+    for (const id of sortedFaqIds.slice(0, limit)) {
       const faq = index.byId.get(id)
       if (faq) {
         const enriched = await enrichFAQWithCards(faq)

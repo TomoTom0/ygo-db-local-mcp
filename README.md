@@ -13,10 +13,12 @@ Model Context Protocol (MCP) server for searching Yu-Gi-Oh! card database locall
 
 ### 📚 FAQ Search Tool
 
-- **search_faq** - Search FAQ database by FAQ ID, card ID, question, or answer text
+- **search_faq** - Search FAQ database by various criteria
+  - FAQ ID, card ID, card name (with wildcards)
+  - Card specifications (race, level, type, etc.)
+  - Question/answer text (with wildcards)
   - Returns FAQs with embedded card information
-  - Supports wildcard search with `*`
-  - Fast cardId lookup with reverse index
+  - Fast lookup with reverse index and card search integration
 
 ### 🎲 Random Card Retrieval
 
@@ -102,6 +104,8 @@ ygo_seek --max 10 --col-all
 # Search FAQ database
 ygo_faq_search '{"faqId":100}'
 ygo_faq_search '{"cardId":6808,"limit":5}'
+ygo_faq_search '{"cardName":"青眼*","limit":10}'
+ygo_faq_search '{"cardFilter":{"race":"dragon","levelValue":"8"},"limit":5}'
 ygo_faq_search '{"question":"シンクロ召喚","limit":10}'
 ygo_faq_search '{"answer":"*無効*","limit":20}'
 

@@ -3,6 +3,8 @@ import { FAQSearchResult } from './types/faq.js';
 interface SearchFAQParams {
     faqId?: number;
     cardId?: number;
+    cardName?: string;
+    cardFilter?: Record<string, any>;
     question?: string;
     answer?: string;
     limit?: number;
