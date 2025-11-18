@@ -300,20 +300,29 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const args = process.argv.slice(2)
   
   if (args.length === 0) {
-    console.error('Usage: node search-faq.js <params_json> [options]')
+    console.error('Usage: node search-faq.js <params_json_or_key=value> [options]')
     console.error('Example: node search-faq.js \'{"cardId":6808}\'')
-    console.error('Example: node search-faq.js \'{"cardId":6808}\' --fcol faqId,question --col name,atk')
-    console.error('Example: node search-faq.js \'{"cardId":6808}\' --format csv')
+    console.error('Example: node search-faq.js cardId=6808 --fcol faqId,question')
+    console.error('Example: node search-faq.js cardName="青眼*" --format csv')
     process.exit(1)
   }
   
   try {
-    const params = JSON.parse(args[0])
+    const params: any = {}
     const options: SearchFAQOptions = {}
+    let jsonMode = false
     
-    // Parse CLI options
-    for (let i = 1; i < args.length; i++) {
+    // Check if first arg is JSON
+    if (args[0].startsWith('{')) {
+      Object.assign(params, JSON.parse(args[0]))
+      jsonMode = true
+    }
+    
+    // Parse all arguments
+    for (let i = jsonMode ? 1 : 0; i < args.length; i++) {
       const arg = args[i]
+      
+      // Options with -- prefix
       if (arg === '--fcol' && args[i + 1]) {
         options.fcols = args[++i].split(',')
       } else if (arg === '--col' && args[i + 1]) {
@@ -327,6 +336,35 @@ if (import.meta.url === `file://${process.argv[1]}`) {
         options.range = [start, end]
       } else if (arg === '--all') {
         options.all = true
+      }
+      // key=value style parameters
+      else if (!jsonMode && arg.includes('=')) {
+        const [key, ...valueParts] = arg.split('=')
+        let value: any = valueParts.join('=')
+        
+        // Remove quotes if present
+        if ((value.startsWith('"') && value.endsWith('"')) || 
+            (value.startsWith("'") && value.endsWith("'"))) {
+          value = value.slice(1, -1)
+        }
+        
+        // Parse nested keys (e.g., cardFilter.race=dragon)
+        if (key.includes('.')) {
+          const parts = key.split('.')
+          const mainKey = parts[0]
+          const subKey = parts[1]
+          if (!params[mainKey]) params[mainKey] = {}
+          params[mainKey][subKey] = value
+        } else {
+          // Convert numeric strings to numbers
+          if (key === 'faqId' || key === 'cardId' || key === 'limit') {
+            params[key] = parseInt(value)
+          } else if (key === 'flagAllowWild') {
+            params[key] = value === 'true'
+          } else {
+            params[key] = value
+          }
+        }
       }
     }
     

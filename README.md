@@ -101,19 +101,22 @@ ygo_seek --range 4000-4100 --all --format csv
 # Get all columns
 ygo_seek --max 10 --col-all
 
-# Search FAQ database
-ygo_faq_search '{"faqId":100}'
-ygo_faq_search '{"cardId":6808,"limit":5}'
-ygo_faq_search '{"cardName":"青眼*","limit":10}'
-ygo_faq_search '{"cardFilter":{"race":"dragon","levelValue":"8"},"limit":5}'
-ygo_faq_search '{"question":"*シンクロ召喚*"}'
-ygo_faq_search '{"answer":"*無効*","limit":20}'
+# Search FAQ database (key=value style - CLI friendly)
+ygo_faq_search faqId=100
+ygo_faq_search cardId=6808 limit=5
+ygo_faq_search cardName="青眼*" limit=10
+ygo_faq_search cardFilter.race=dragon cardFilter.levelValue=8
+ygo_faq_search question="*シンクロ召喚*"
+ygo_faq_search answer="*無効*" limit=20
 
 # FAQ search with output options
-ygo_faq_search '{"cardId":6808}' --fcol faqId,question
-ygo_faq_search '{"cardId":6808}' --col name,atk,def
-ygo_faq_search '{"cardName":"青眼*"}' --format csv
-ygo_faq_search '{"cardFilter":{"race":"dragon"}}' --random --limit 5
+ygo_faq_search cardId=6808 --fcol faqId,question
+ygo_faq_search cardId=6808 --col name,atk,def
+ygo_faq_search cardName="青眼*" --format csv
+ygo_faq_search cardFilter.race=dragon --random limit=5
+
+# JSON style still supported
+ygo_faq_search '{"cardId":6808,"limit":5}' --fcol faqId,question
 
 # Convert file formats
 ygo_convert input.json:output.jsonl
