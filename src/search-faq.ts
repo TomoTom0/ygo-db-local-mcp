@@ -1,13 +1,12 @@
 #!/usr/bin/env node
 import { loadFAQIndex, getCardsByIds, extractCardReferences } from './utils/faq-loader.js'
-import { FAQWithCards, FAQSearchResult } from './types/faq.js'
-import { spawn } from 'child_process'
+import { FAQWithCards, FAQSearchResult, FAQRecord } from './types/faq.js'
 import path from 'path'
 import url from 'url'
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
 
-interface SearchFAQParams {
+export interface SearchFAQParams {
   faqId?: number
   cardId?: number
   cardName?: string
@@ -41,7 +40,7 @@ function matchesQuery(text: string, normalized: string, query: string, flagAllow
   return normalized.includes(query.toLowerCase())
 }
 
-async function enrichFAQWithCards(faq: any): Promise<FAQWithCards> {
+async function enrichFAQWithCards(faq: FAQRecord): Promise<FAQWithCards> {
   const questionRefs = extractCardReferences(faq.question)
   const answerRefs = extractCardReferences(faq.answer)
   const allCardIds = Array.from(new Set([
@@ -68,45 +67,9 @@ async function enrichFAQWithCards(faq: any): Promise<FAQWithCards> {
 }
 
 async function searchCardsByFilter(filter: Record<string, any>): Promise<number[]> {
-  return new Promise((resolve, reject) => {
-    const searchScript = path.join(__dirname, 'search-cards.js')
-    const args = [searchScript, JSON.stringify(filter), 'cols=cardId']
-    
-    const child = spawn('node', args, { stdio: ['ignore', 'pipe', 'pipe'] })
-    let stdout = ''
-    let stderr = ''
-    
-    child.stdout?.on('data', (data) => { stdout += data })
-    child.stderr?.on('data', (data) => { stderr += data })
-    
-    child.on('close', (code) => {
-      if (code !== 0) {
-        reject(new Error(`Card search failed: ${stderr}`))
-        return
-      }
-      
-      try {
-        const lines = stdout.trim().split('\n').filter(line => line.trim())
-        const cardIds: number[] = []
-        
-        for (const line of lines) {
-          try {
-            const obj = JSON.parse(line)
-            const cardId = parseInt(obj.cardId)
-            if (!isNaN(cardId)) {
-              cardIds.push(cardId)
-            }
-          } catch {
-            // Skip invalid JSON lines
-          }
-        }
-        
-        resolve(cardIds)
-      } catch (err) {
-        reject(err)
-      }
-    })
-  })
+  const { searchCards } = await import('./lib/card-search-core.js')
+  const results = await searchCards({ filter, cols: ['cardId'] })
+  return results.map((card: any) => parseInt(card.cardId)).filter((id: number) => !isNaN(id))
 }
 
 export async function searchFAQ(params: SearchFAQParams): Promise<FAQSearchResult[]> {

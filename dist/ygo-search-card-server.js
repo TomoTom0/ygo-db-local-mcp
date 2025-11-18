@@ -194,19 +194,22 @@ server.tool("search_faq", `Search Yu-Gi-Oh! FAQ database by FAQ ID, card ID, car
     outputPath: z.string().optional().describe("Output file path (e.g., 'result.json' or 'result.jsonl')"),
     outputDir: z.string().optional().describe("Output directory (defaults to current directory or YGO_OUTPUT_DIR)")
 }, async ({ faqId, cardId, cardName, cardFilter, question, answer, limit, flagAllowWild, fcols, cols, format, random, range, all, outputPath, outputDir }) => {
-    const params = { limit, flagAllowWild };
-    if (faqId !== undefined)
-        params.faqId = faqId;
-    if (cardId !== undefined)
-        params.cardId = cardId;
-    if (cardName)
-        params.cardName = cardName;
-    if (cardFilter)
-        params.cardFilter = cardFilter;
-    if (question)
-        params.question = question;
-    if (answer)
-        params.answer = answer;
+    const params = {
+        limit,
+        flagAllowWild,
+        faqId,
+        cardId,
+        cardName,
+        cardFilter,
+        question,
+        answer
+    };
+    // Remove undefined properties
+    Object.keys(params).forEach(key => {
+        if (params[key] === undefined) {
+            delete params[key];
+        }
+    });
     const args = [faqSearchScript, JSON.stringify(params)];
     if (fcols)
         args.push('--fcol', fcols);

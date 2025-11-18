@@ -6,6 +6,7 @@ import { spawn, type ChildProcess } from "child_process";
 import path from "path";
 import url from "url";
 import fs from "fs/promises";
+import type { SearchFAQParams } from "./search-faq.js";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const cliScript = path.join(__dirname, "search-cards.js");
@@ -244,13 +245,23 @@ server.tool(
     outputDir: z.string().optional().describe("Output directory (defaults to current directory or YGO_OUTPUT_DIR)")
   },
   async ({ faqId, cardId, cardName, cardFilter, question, answer, limit, flagAllowWild, fcols, cols, format, random, range, all, outputPath, outputDir }) => {
-    const params: any = { limit, flagAllowWild };
-    if (faqId !== undefined) params.faqId = faqId;
-    if (cardId !== undefined) params.cardId = cardId;
-    if (cardName) params.cardName = cardName;
-    if (cardFilter) params.cardFilter = cardFilter;
-    if (question) params.question = question;
-    if (answer) params.answer = answer;
+    const params: Partial<SearchFAQParams> = {
+      limit,
+      flagAllowWild,
+      faqId,
+      cardId,
+      cardName,
+      cardFilter,
+      question,
+      answer
+    };
+    
+    // Remove undefined properties
+    Object.keys(params).forEach(key => {
+      if (params[key as keyof SearchFAQParams] === undefined) {
+        delete params[key as keyof SearchFAQParams];
+      }
+    });
     
     const args = [faqSearchScript, JSON.stringify(params)];
     if (fcols) args.push('--fcol', fcols);

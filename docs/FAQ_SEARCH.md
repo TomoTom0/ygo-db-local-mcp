@@ -171,13 +171,15 @@ ygo_faq_search --help
 
 ## 今後の拡張可能性
 
-### Phase 3: カードスペック検索（未実装）
+### Phase 3: カードスペック検索（✅ 実装済み）
 ```bash
 # レベル8のドラゴン族に関するFAQ
-ygo_faq_search '{"cardSpec":{"race":"dragon","levelValue":"8"}}'
+ygo_faq_search cardFilter.race=dragon cardFilter.levelValue=8
+# または
+ygo_faq_search '{"cardFilter":{"race":"dragon","levelValue":"8"}}'
 ```
 
-実装案：
+実装済み：
 1. カード検索でスペックに合致するカードを取得
 2. それらのカードIDでFAQ検索
 3. 結果をマージ

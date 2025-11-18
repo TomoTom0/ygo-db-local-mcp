@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-import { searchFAQ } from '../search-faq.js'
-
 const args = process.argv.slice(2)
 
 if (args.length === 0 || args.includes('--help') || args.includes('-h')) {

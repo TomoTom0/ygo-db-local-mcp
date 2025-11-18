@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { FAQSearchResult } from './types/faq.js';
-interface SearchFAQParams {
+export interface SearchFAQParams {
     faqId?: number;
     cardId?: number;
     cardName?: string;
@@ -11,5 +11,4 @@ interface SearchFAQParams {
     flagAllowWild?: boolean;
 }
 export declare function searchFAQ(params: SearchFAQParams): Promise<FAQSearchResult[]>;
-export {};
 //# sourceMappingURL=search-faq.d.ts.map
