@@ -1,5 +1,22 @@
 # Completed Tasks
 
+## 2025-11-19
+
+### Vector DB Conversion Script ✅
+- [x] TSV to JSONL converter for RAG/vector database
+- [x] Enum日本語化 (attributes, races, card types)
+- [x] Rich text generation in OCG standard format
+- [x] FAQ enrichment with related card information
+- [x] Metadata generation (releaseGroup, relatedCardIds)
+- **Location**: `tmp/wip/`
+- **Output**: `tmp/wip/output/cards_for_vectordb.jsonl` (13,754 cards, 22MB)
+- **Output**: `tmp/wip/output/faqs_for_vectordb.jsonl` (12,578 FAQs, 32MB)
+- **Features**:
+  - Handles TSV parsing with relaxed quote/column rules
+  - Extracts card IDs from `{{name|id}}` patterns in FAQs
+  - Limits enrichment to 5 cards (rest as name list)
+  - Error handling for missing card references
+
 ## 2025-11-18
 
 ### PR #13 Review Fixes ✅
