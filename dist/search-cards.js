@@ -155,6 +155,11 @@ async function main() {
     const flagAllowWild = flagAllowWildArg ? flagAllowWildArg.replace(/^flagAllowWild=/, '') !== 'false' : true;
     const flagNearlyArg = args.find(a => a.startsWith('flagNearly='));
     const flagNearly = flagNearlyArg ? flagNearlyArg.replace(/^flagNearly=/, '') === 'true' : false;
+    const maxArg = args.find(a => a.startsWith('max='));
+    const max = maxArg ? parseInt(maxArg.replace(/^max=/, '')) : 100;
+    const sortArg = args.find(a => a.startsWith('sort='));
+    const sort = sortArg ? sortArg.replace(/^sort=/, '') : undefined;
+    const raw = args.includes('--raw');
     if (mode !== 'exact' && mode !== 'partial') {
         console.error('mode must be "exact" or "partial"');
         process.exit(2);
@@ -278,8 +283,36 @@ async function main() {
                 detailsMap[obj.cardId] = obj;
         }
     }
+    // Apply sorting if requested
+    if (sort) {
+        const sortParts = sort.split(':');
+        const sortField = sortParts[0];
+        const sortOrder = sortParts[1] || 'asc'; // default to asc
+        if (!['asc', 'desc'].includes(sortOrder)) {
+            console.error('sort order must be "asc" or "desc"');
+            process.exit(2);
+        }
+        matchedCards.sort((a, b) => {
+            const valA = a[sortField] || '';
+            const valB = b[sortField] || '';
+            // Numeric comparison for numeric fields
+            const numericFields = ['cardId', 'atk', 'def', 'levelValue', 'pendulumScale'];
+            if (numericFields.includes(sortField)) {
+                const numA = parseInt(valA) || 0;
+                const numB = parseInt(valB) || 0;
+                return sortOrder === 'asc' ? numA - numB : numB - numA;
+            }
+            // String comparison (handles Japanese kana/kanji)
+            const result = valA.localeCompare(valB, 'ja');
+            return sortOrder === 'asc' ? result : -result;
+        });
+    }
+    // Apply max limit
+    const totalMatches = matchedCards.length;
+    const limitedCards = matchedCards.slice(0, max);
+    const limitReached = totalMatches > max;
     const results = [];
-    for (const c of matchedCards) {
+    for (const c of limitedCards) {
         const merged = { ...c, ...(detailsMap[c.cardId] || {}) };
         if (cols) {
             const resultCols = [...cols];
@@ -318,6 +351,10 @@ async function main() {
         else {
             results.push(merged);
         }
+    }
+    // Show warning if limit reached (unless --raw mode)
+    if (limitReached && !raw) {
+        console.error(`Warning: Result limit reached. Showing ${max} of ${totalMatches} matches. Use max=N to adjust limit.`);
     }
     // Output as JSONL (one JSON object per line)
     if (Array.isArray(results) && results.length > 0) {

@@ -9,12 +9,15 @@
 - Current Task: Add --max and --sort to search-cards
 
 ## Progress
-- [ ] Add --max option (default: 100)
-  - [ ] Implement limit logic
-  - [ ] Show warning when limit reached (except --raw mode)
-- [ ] Add --sort option
-  - [ ] Support fields: cardId, name, ruby, atk, def, levelValue
-  - [ ] Support sort order: asc/desc
-  - [ ] Default order: numeric→asc, text→dictionary order
-- [ ] Update --help text
-- [ ] Build and test
+- [x] Add --max option (default: 100)
+  - [x] Implement limit logic
+  - [x] Show warning when limit reached (except --raw mode)
+- [x] Add --sort option
+  - [x] Support fields: cardId, name, ruby, atk, def, levelValue
+  - [x] Support sort order: asc/desc
+  - [x] Default order: numeric→asc, text→dictionary order
+- [x] Update --help text
+- [x] Build and test
+
+## Ready for Review
+All tasks completed and tested.
