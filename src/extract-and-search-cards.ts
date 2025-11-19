@@ -24,22 +24,26 @@ async function bulkSearchCards(patterns: Array<{pattern: string, type: PatternTy
   
   // Build queries for bulk search
   const queries = patterns.map(p => {
-    const query: any = { cols: cols.join(',') }
-    
+    const filter: Record<string, string> = {}
     if (p.type === 'cardId') {
-      query.cardId = p.query
+      filter.cardId = p.query
     } else {
-      query.name = p.query
-      // Set flags based on pattern type
-      if (p.type === 'flexible') {
-        query.flagAllowWild = 'true'
-        query.flagAutoModify = 'true'
-      } else if (p.type === 'exact') {
-        query.flagAllowWild = 'false'
-        query.flagAutoModify = 'true'
-      }
+      filter.name = p.query
     }
-    
+
+    const query: any = {
+      filter,
+      cols,
+    }
+
+    if (p.type === 'flexible') {
+      query.flagAllowWild = true
+      query.flagAutoModify = true
+    } else if (p.type === 'exact') {
+      query.flagAllowWild = false
+      query.flagAutoModify = true
+    }
+
     return query
   })
   
