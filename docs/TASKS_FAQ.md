@@ -40,7 +40,7 @@
 - [x] Add FAQ tools to MCP server (ygo-search-card-server.ts)
 - [x] Create CLI commands
   - ygo_faq_search CLI created
-- [ ] Update README.md with FAQ search documentation
+- [x] Update README.md with FAQ search documentation
 
 ## Phase 5: Testing & Polish
 - [x] Test with sample queries

@@ -184,7 +184,7 @@ ygo_faq_search '{"cardFilter":{"race":"dragon","levelValue":"8"}}'
 2. それらのカードIDでFAQ検索
 3. 結果をマージ
 
-### Phase 3: バルク検索（未実装）
+### Phase 3: バルク検索
 ```bash
 # 複数のFAQ検索を一度に実行
 ygo_faq_search '[

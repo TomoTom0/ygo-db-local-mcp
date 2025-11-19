@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import readline from 'readline'
 import { FAQRecord, FAQIndex, CardReference } from '../types/faq.js'
-import { Card } from '../types/card.js'
+import { Card, CardType, Attribute, LevelType, Race, SpellEffectType, TrapEffectType } from '../types/card.js'
 import { findProjectRoot } from './project-root.js'
 
 let cachedIndex: FAQIndex | null = null
@@ -36,6 +36,33 @@ function normalizeForSearch(str: string): string {
     .replace(/[\u3041-\u3096]/g, (s) => String.fromCharCode(s.charCodeAt(0) + 0x60))
 }
 
+function isCardType(value: string): value is CardType {
+  return ['monster', 'spell', 'trap'].includes(value)
+}
+
+function isAttribute(value: string): value is Attribute {
+  return ['dark', 'divine', 'earth', 'fire', 'light', 'water', 'wind'].includes(value)
+}
+
+function isLevelType(value: string): value is LevelType {
+  return ['level', 'rank', 'link'].includes(value)
+}
+
+function isRace(value: string): value is Race {
+  return ['aqua', 'beast', 'beastwarrior', 'creatorgod', 'cyberse', 'dinosaur', 
+          'divine', 'dragon', 'fairy', 'fiend', 'fish', 'illusion', 'insect', 
+          'machine', 'plant', 'psychic', 'pyro', 'reptile', 'rock', 'seaserpent', 
+          'spellcaster', 'thunder', 'warrior', 'windbeast', 'wyrm', 'zombie'].includes(value)
+}
+
+function isSpellEffectType(value: string): value is SpellEffectType {
+  return ['normal', 'quick', 'continuous', 'equip', 'field', 'ritual'].includes(value)
+}
+
+function isTrapEffectType(value: string): value is TrapEffectType {
+  return ['normal', 'continuous', 'counter'].includes(value)
+}
+
 async function loadCards(): Promise<Map<string, Card>> {
   if (cardsCache) return cardsCache
   
@@ -57,7 +84,7 @@ async function loadCards(): Promise<Map<string, Card>> {
     if (parts.length < 5) continue
     
     const card: Card = {
-      cardType: parts[0] as any,
+      cardType: isCardType(parts[0]) ? parts[0] : 'monster',
       name: parts[1],
       nameModified: parts[2],
       ruby: parts[3],
@@ -65,10 +92,10 @@ async function loadCards(): Promise<Map<string, Card>> {
       ciid: parts[5] || undefined,
       imgs: parts[6] || undefined,
       text: parts[7] || undefined,
-      attribute: parts[8] as any || undefined,
-      levelType: parts[9] as any || undefined,
+      attribute: parts[8] && isAttribute(parts[8]) ? parts[8] : undefined,
+      levelType: parts[9] && isLevelType(parts[9]) ? parts[9] : undefined,
       levelValue: parts[10] || undefined,
-      race: parts[11] as any || undefined,
+      race: parts[11] && isRace(parts[11]) ? parts[11] : undefined,
       monsterTypes: parts[12] || undefined,
       atk: parts[13] || undefined,
       def: parts[14] || undefined,
@@ -76,8 +103,8 @@ async function loadCards(): Promise<Map<string, Card>> {
       pendulumScale: parts[16] || undefined,
       pendulumText: parts[17] || undefined,
       isExtraDeck: parts[18] || undefined,
-      spellEffectType: parts[19] as any || undefined,
-      trapEffectType: parts[20] as any || undefined,
+      spellEffectType: parts[19] && isSpellEffectType(parts[19]) ? parts[19] : undefined,
+      trapEffectType: parts[20] && isTrapEffectType(parts[20]) ? parts[20] : undefined,
     }
     
     cards.set(card.cardId, card)

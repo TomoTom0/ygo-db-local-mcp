@@ -29,6 +29,27 @@ function normalizeForSearch(str) {
         .toLowerCase()
         .replace(/[\u3041-\u3096]/g, (s) => String.fromCharCode(s.charCodeAt(0) + 0x60));
 }
+function isCardType(value) {
+    return ['monster', 'spell', 'trap'].includes(value);
+}
+function isAttribute(value) {
+    return ['dark', 'divine', 'earth', 'fire', 'light', 'water', 'wind'].includes(value);
+}
+function isLevelType(value) {
+    return ['level', 'rank', 'link'].includes(value);
+}
+function isRace(value) {
+    return ['aqua', 'beast', 'beastwarrior', 'creatorgod', 'cyberse', 'dinosaur',
+        'divine', 'dragon', 'fairy', 'fiend', 'fish', 'illusion', 'insect',
+        'machine', 'plant', 'psychic', 'pyro', 'reptile', 'rock', 'seaserpent',
+        'spellcaster', 'thunder', 'warrior', 'windbeast', 'wyrm', 'zombie'].includes(value);
+}
+function isSpellEffectType(value) {
+    return ['normal', 'quick', 'continuous', 'equip', 'field', 'ritual'].includes(value);
+}
+function isTrapEffectType(value) {
+    return ['normal', 'continuous', 'counter'].includes(value);
+}
 async function loadCards() {
     if (cardsCache)
         return cardsCache;
@@ -47,7 +68,7 @@ async function loadCards() {
         if (parts.length < 5)
             continue;
         const card = {
-            cardType: parts[0],
+            cardType: isCardType(parts[0]) ? parts[0] : 'monster',
             name: parts[1],
             nameModified: parts[2],
             ruby: parts[3],
@@ -55,10 +76,10 @@ async function loadCards() {
             ciid: parts[5] || undefined,
             imgs: parts[6] || undefined,
             text: parts[7] || undefined,
-            attribute: parts[8] || undefined,
-            levelType: parts[9] || undefined,
+            attribute: parts[8] && isAttribute(parts[8]) ? parts[8] : undefined,
+            levelType: parts[9] && isLevelType(parts[9]) ? parts[9] : undefined,
             levelValue: parts[10] || undefined,
-            race: parts[11] || undefined,
+            race: parts[11] && isRace(parts[11]) ? parts[11] : undefined,
             monsterTypes: parts[12] || undefined,
             atk: parts[13] || undefined,
             def: parts[14] || undefined,
@@ -66,8 +87,8 @@ async function loadCards() {
             pendulumScale: parts[16] || undefined,
             pendulumText: parts[17] || undefined,
             isExtraDeck: parts[18] || undefined,
-            spellEffectType: parts[19] || undefined,
-            trapEffectType: parts[20] || undefined,
+            spellEffectType: parts[19] && isSpellEffectType(parts[19]) ? parts[19] : undefined,
+            trapEffectType: parts[20] && isTrapEffectType(parts[20]) ? parts[20] : undefined,
         };
         cards.set(card.cardId, card);
     }
