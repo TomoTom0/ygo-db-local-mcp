@@ -1,16 +1,20 @@
 # Work In Progress
 
 ## Currently Working On
-🚧 PR #14 Review Fixes - searchCardsByFilter最適化
+🚧 Search enhancements: --max and --sort options
 
 ## Status
-- Branch: feature/faq-search
+- Branch: dev
 - Last Updated: 2025-11-19
-- Current Task: HIGH Priority - プロセスspawn削減
+- Current Task: Add --max and --sort to search-cards
 
 ## Progress
-- [x] PR #13レビュー対応完了
-- [ ] PR #14レビュー対応（進行中）
-  - [ ] 1. searchCardsByFilter最適化（HIGH）
-  - [ ] 2-5. 型安全性改善（MEDIUM）
-  - [ ] 6. ドキュメント修正（MEDIUM）
+- [ ] Add --max option (default: 100)
+  - [ ] Implement limit logic
+  - [ ] Show warning when limit reached (except --raw mode)
+- [ ] Add --sort option
+  - [ ] Support fields: cardId, name, ruby, atk, def, levelValue
+  - [ ] Support sort order: asc/desc
+  - [ ] Default order: numeric→asc, text→dictionary order
+- [ ] Update --help text
+- [ ] Build and test
