@@ -179,7 +179,7 @@ async function main(){
   const flagNearlyArg = args.find(a=>a.startsWith('flagNearly='))
   const flagNearly = flagNearlyArg ? flagNearlyArg.replace(/^flagNearly=/,'') === 'true' : false
   const maxArg = args.find(a=>a.startsWith('max='))
-  const max = maxArg ? parseInt(maxArg.replace(/^max=/,'')) : 100
+  const max = ((v) => Number.isInteger(v) && v >= 0 ? v : 100)(parseInt(maxArg?.replace(/^max=/, '') || '100', 10))
   const sortArg = args.find(a=>a.startsWith('sort='))
   const sort = sortArg ? sortArg.replace(/^sort=/,'') : undefined
   const raw = args.includes('--raw')
@@ -300,6 +300,12 @@ async function main(){
     
     if(!['asc', 'desc'].includes(sortOrder)){
       console.error('sort order must be "asc" or "desc"')
+      process.exit(2)
+    }
+    
+    // Validate sortField exists in headers
+    if(!headers.includes(sortField)){
+      console.error(`Invalid sort field "${sortField}". Available fields: ${headers.join(', ')}`)
       process.exit(2)
     }
     
