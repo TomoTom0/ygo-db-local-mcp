@@ -57,7 +57,7 @@ const COLUMN_DEFINITIONS = {
     values: ['level', 'rank', 'link']
   },
   levelValue: {
-    description: 'Level/Rank/Link value (1-12)',
+    description: 'Level/Rank/Link value (0-13)',
     type: 'number'
   },
   race: {
