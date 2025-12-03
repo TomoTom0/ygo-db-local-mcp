@@ -6,7 +6,7 @@
 ## Status
 - Branch: feature/bulk-search-and-columns
 - Last Updated: 2025-12-04
-- Last Commit: af44415 (ygo_search ヘルプから imgs フィルタパラメータを削除)
+- Last Commit: 7fa9e45 (ygo_search columns コマンドに「出力のみ」表記を追加)
 
 ## Completed Tasks in This Session
 ✅ ygo_searchのヘルプの例を修正（青眼→青眼の白龍など）
@@ -16,6 +16,7 @@
 ✅ JSON配列フィールド（monsterTypes）の検索ロジック実装
 ✅ valueMatches関数でJSONパースとマッチング処理を追加
 ✅ imgsフィルタパラメータをヘルプから削除（不要な機能）
+✅ columnsコマンドに「(output only)」表記を追加
 
 ## Tested and Working
 - ✅ `ygo_search --monsterTypes effect` (8191件)
@@ -24,6 +25,7 @@
 - ✅ `ygo_search --cardId 19723,21820,21207`
 - ✅ `ygo_search --name "青眼の白龍" --cols name,cardId,text`
 - ✅ `ygo_search --race dragon --atk 3000 --sort levelValue:asc --cols name,atk,def,race`
+- ✅ `ygo_search columns` でimgsに「(output only)」表記
 
 ## Future Tasks
 - その他のテストカバレッジ（必要に応じて）
