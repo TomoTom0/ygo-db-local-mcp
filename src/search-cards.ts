@@ -133,7 +133,7 @@ function fuzzyMatch(val: string, pattern: string): boolean {
 }
 
 // JSON array fields in the database (fields that store JSON-formatted arrays)
-const JSON_ARRAY_FIELDS = ['monsterTypes', 'imgs']
+const JSON_ARRAY_FIELDS = ['monsterTypes']
 
 // Check if a field contains JSON array data
 function isJsonArrayField(fieldName: string): boolean {
@@ -311,10 +311,10 @@ function parseArgs(args: string[]): {
   let raw = false
 
   // Filter field flags
-  const filterFlags = ['name', 'text', 'cardId', 'cardType', 'race', 'attribute', 'atk', 'def', 'level', 'levelValue', 'pendulumScale', 'ruby', 'linkValue', 'linkArrows', 'monsterTypes', 'imgs']
+  const filterFlags = ['name', 'text', 'cardId', 'cardType', 'race', 'attribute', 'atk', 'def', 'level', 'levelValue', 'pendulumScale', 'ruby', 'linkValue', 'linkArrows', 'monsterTypes']
 
   // Array parameter fields that need JSON parsing or comma-separated support
-  const arrayFields = ['cardId', 'monsterTypes', 'imgs']
+  const arrayFields = ['cardId', 'monsterTypes']
 
   let i = 0
   while (i < args.length) {

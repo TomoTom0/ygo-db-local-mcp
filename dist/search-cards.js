@@ -91,8 +91,7 @@ function fuzzyMatch(val, pattern) {
 }
 // JSON array fields in the database (fields that store JSON-formatted arrays)
 const JSON_ARRAY_FIELDS = [
-    'monsterTypes',
-    'imgs'
+    'monsterTypes'
 ];
 // Check if a field contains JSON array data
 function isJsonArrayField(fieldName) {
@@ -245,14 +244,12 @@ function parseArgs(args) {
         'ruby',
         'linkValue',
         'linkArrows',
-        'monsterTypes',
-        'imgs'
+        'monsterTypes'
     ];
     // Array parameter fields that need JSON parsing or comma-separated support
     const arrayFields = [
         'cardId',
-        'monsterTypes',
-        'imgs'
+        'monsterTypes'
     ];
     let i = 0;
     while(i < args.length){
