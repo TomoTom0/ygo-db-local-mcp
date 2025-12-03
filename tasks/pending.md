@@ -46,17 +46,12 @@
 
 ## Blocked Tasks
 
-### ygo_searchのJSON配列フィールドの検索ロジック実装
+### ygo_searchのimgsフィールド対応
 - **Status**: ブロック中
-- **Issue**: monsterTypes, linkMarkers, imgs などのJSON配列フィールドの検索に未対応
-  - `--monsterTypes '["effect","fusion"]'` のパラメータは受け取れる
-  - しかし、実際の検索ロジック側で JSON 配列を解析・マッチングする処理がない
-- **Root Cause**: valueMatches関数がJSON配列フィールドに対応していない
-  - データファイルではmonsterTypesが JSON文字列（"["effect","fusion"]"）として格納されている
-  - 現在の検索ロジックではこの文字列と直接マッチングしようとしている
-- **Impact**: arrayパラメータは受け取れるが、マッチング処理がないため結果が返らない
-- **Fix Needed**:
-  1. valueMatches関数でJSON配列フィールドの検索に対応する
-  2. データの JSON 配列を解析してからマッチング判定を行う
-  3. "or" 条件で複数値のいずれかに該当するかチェックする
-- **Related Commits**: 4a87ab2 (parsingロジックは実装済み)
+- **Issue**: imgs フィールドの構造が複雑（オブジェクト配列）
+  - 例：`[{"ciid":"1","imgHash":"xxx"}]`
+  - monsterTypesのような単純な文字列配列ではない
+- **Current Support**: monsterTypes, cardId のカンマ区切り形式対応済み
+  - ✅ monsterTypes で検索可能
+  - ✅ cardId でカンマ区切り形式対応
+- **Next**: imgsフィールドの実装は後回し
