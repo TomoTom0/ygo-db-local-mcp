@@ -203,17 +203,17 @@ const COLUMN_DEFINITIONS = {
     }
 };
 function showColumns() {
-    console.log(`Available Card Columns
-========================
+    console.log(`利用可能なカラム一覧
+==================
 
-To use columns in search, specify them with --cols or cols= parameter:
+カラムは --cols または cols= パラメータで指定して出力できます：
   ygo_search --name "青眼" --cols name,ruby,atk,def
   ygo_search name=ドラゴン cols=name,race,levelValue
 
-Filter-supported columns can also be used with --name, --cardId, --monsterTypes, etc.
-Output-only columns (marked below) can only be used with --cols.
+ほとんどのカラムはフィルタに対応していますが、フィルタ不可のカラムは下記に表記されています。
+フィルタ不可のカラムは --cols での出力のみに使用できます。
 
-Column Reference:
+カラムリファレンス:
 `);
     // Define filter-supported columns
     const filterableColumns = [
@@ -234,7 +234,7 @@ Column Reference:
         'monsterTypes'
     ];
     const categories = {
-        'Basic Information': [
+        '基本情報': [
             'cardType',
             'name',
             'nameModified',
@@ -244,7 +244,7 @@ Column Reference:
             'imgs',
             'text'
         ],
-        'Monster Fields': [
+        'モンスターフィールド': [
             'attribute',
             'levelType',
             'levelValue',
@@ -257,11 +257,11 @@ Column Reference:
             'pendulumText',
             'isExtraDeck'
         ],
-        'Spell/Trap Fields': [
+        '魔法・罠フィールド': [
             'spellEffectType',
             'trapEffectType'
         ],
-        'Supplementary Info': [
+        '補足情報': [
             'supplementInfo',
             'supplementDate',
             'pendulumSupplementInfo',
@@ -275,7 +275,7 @@ Column Reference:
             const def = COLUMN_DEFINITIONS[col];
             if (!def) continue;
             const isFilterable = filterableColumns.includes(col);
-            const modeLabel = isFilterable ? '' : ' (output only)';
+            const modeLabel = isFilterable ? '' : ' (フィルタ不可)';
             console.log(`\n  ${col}${modeLabel}`);
             console.log(`    Type: ${def.type}`);
             console.log(`    Desc: ${def.description}`);
@@ -290,13 +290,13 @@ Column Reference:
         }
     }
     console.log(`
-Common Column Sets:
-  Basic:     name,cardId
-  Full:      name,cardId,text,atk,def,race,attribute
-  Monster:   name,race,attribute,levelValue,atk,def
-  Spell:     name,spellEffectType,text
-  Trap:      name,trapEffectType,text
-  Details:   name,supplementInfo,supplementDate
+カラムセット（よく使う組み合わせ）:
+  基本:     name,cardId
+  全情報:   name,cardId,text,atk,def,race,attribute
+  モンスター: name,race,attribute,levelValue,atk,def
+  魔法:     name,spellEffectType,text
+  罠:      name,trapEffectType,text
+  詳細:     name,supplementInfo,supplementDate
 `);
 }
 async function main() {
