@@ -134,8 +134,14 @@ To use columns in search, specify them with --cols or cols= parameter:
   ygo_search --name "青眼" --cols name,ruby,atk,def
   ygo_search name=ドラゴン cols=name,race,levelValue
 
+Filter-supported columns can also be used with --name, --cardId, --monsterTypes, etc.
+Output-only columns (marked below) can only be used with --cols.
+
 Column Reference:
 `);
+
+  // Define filter-supported columns
+  const filterableColumns = ['name', 'text', 'cardId', 'cardType', 'race', 'attribute', 'atk', 'def', 'level', 'levelValue', 'pendulumScale', 'ruby', 'linkValue', 'linkArrows', 'monsterTypes'];
 
   const categories = {
     'Basic Information': ['cardType', 'name', 'nameModified', 'ruby', 'cardId', 'ciid', 'imgs', 'text'],
@@ -147,19 +153,22 @@ Column Reference:
   for (const [category, columns] of Object.entries(categories)) {
     console.log(`\n${category}`);
     console.log('-'.repeat(category.length));
-    
+
     for (const col of columns) {
       const def = COLUMN_DEFINITIONS[col as keyof typeof COLUMN_DEFINITIONS];
       if (!def) continue;
-      
-      console.log(`\n  ${col}`);
+
+      const isFilterable = filterableColumns.includes(col);
+      const modeLabel = isFilterable ? '' : ' (output only)';
+
+      console.log(`\n  ${col}${modeLabel}`);
       console.log(`    Type: ${def.type}`);
       console.log(`    Desc: ${def.description}`);
-      
+
       if ('example' in def && def.example) {
         console.log(`    Ex:   ${def.example}`);
       }
-      
+
       if ('values' in def && def.values && def.values.length > 0) {
         const vals = def.values.slice(0, 5).join(', ');
         const suffix = def.values.length > 5 ? '...' : '';

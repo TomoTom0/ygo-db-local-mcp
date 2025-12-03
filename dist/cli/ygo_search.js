@@ -210,8 +210,29 @@ To use columns in search, specify them with --cols or cols= parameter:
   ygo_search --name "青眼" --cols name,ruby,atk,def
   ygo_search name=ドラゴン cols=name,race,levelValue
 
+Filter-supported columns can also be used with --name, --cardId, --monsterTypes, etc.
+Output-only columns (marked below) can only be used with --cols.
+
 Column Reference:
 `);
+    // Define filter-supported columns
+    const filterableColumns = [
+        'name',
+        'text',
+        'cardId',
+        'cardType',
+        'race',
+        'attribute',
+        'atk',
+        'def',
+        'level',
+        'levelValue',
+        'pendulumScale',
+        'ruby',
+        'linkValue',
+        'linkArrows',
+        'monsterTypes'
+    ];
     const categories = {
         'Basic Information': [
             'cardType',
@@ -253,7 +274,9 @@ Column Reference:
         for (const col of columns){
             const def = COLUMN_DEFINITIONS[col];
             if (!def) continue;
-            console.log(`\n  ${col}`);
+            const isFilterable = filterableColumns.includes(col);
+            const modeLabel = isFilterable ? '' : ' (output only)';
+            console.log(`\n  ${col}${modeLabel}`);
             console.log(`    Type: ${def.type}`);
             console.log(`    Desc: ${def.description}`);
             if ('example' in def && def.example) {
