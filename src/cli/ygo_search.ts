@@ -212,9 +212,8 @@ Filter Options (at least one required):
   --ruby <value>            Ruby (reading) filter
   --linkValue <value>       Link value filter
   --linkArrows <value>      Link arrows filter
-  --monsterTypes <value>    Monster types (JSON array format required, e.g. '["effect","fusion"]')
-  --linkMarkers <value>     Link marker positions (JSON array format required)
-  --imgs <value>            Card images (JSON array format required)
+  --monsterTypes <value>    Monster types (JSON array format, e.g. '["effect","fusion"]' or comma-separated)
+  --imgs <value>            Card images (JSON array format)
 
 Output Options:
   --cols <col1,col2,...>    Columns to return (comma-separated)
