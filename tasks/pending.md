@@ -45,13 +45,4 @@
 - **Decision By**: Based on user feedback
 
 ## Blocked Tasks
-
-### ygo_searchのimgsフィールド対応
-- **Status**: ブロック中
-- **Issue**: imgs フィールドの構造が複雑（オブジェクト配列）
-  - 例：`[{"ciid":"1","imgHash":"xxx"}]`
-  - monsterTypesのような単純な文字列配列ではない
-- **Current Support**: monsterTypes, cardId のカンマ区切り形式対応済み
-  - ✅ monsterTypes で検索可能
-  - ✅ cardId でカンマ区切り形式対応
-- **Next**: imgsフィールドの実装は後回し
+（現在ブロックされているタスクはありません）
