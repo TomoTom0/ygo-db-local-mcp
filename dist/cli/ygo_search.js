@@ -9,7 +9,11 @@ const COLUMN_DEFINITIONS = {
     cardType: {
         description: 'Card type (monster, spell, trap)',
         type: 'enum',
-        values: ['monster', 'spell', 'trap']
+        values: [
+            'monster',
+            'spell',
+            'trap'
+        ]
     },
     name: {
         description: 'Official card name',
@@ -47,12 +51,24 @@ const COLUMN_DEFINITIONS = {
     attribute: {
         description: 'Monster attribute',
         type: 'enum',
-        values: ['dark', 'divine', 'earth', 'fire', 'light', 'water', 'wind']
+        values: [
+            'dark',
+            'divine',
+            'earth',
+            'fire',
+            'light',
+            'water',
+            'wind'
+        ]
     },
     levelType: {
         description: 'Level type (level, rank, or link)',
         type: 'enum',
-        values: ['level', 'rank', 'link']
+        values: [
+            'level',
+            'rank',
+            'link'
+        ]
     },
     levelValue: {
         description: 'Level/Rank/Link value (0-13)',
@@ -61,12 +77,55 @@ const COLUMN_DEFINITIONS = {
     race: {
         description: 'Monster race/type',
         type: 'enum',
-        values: ['aqua', 'beast', 'beastwarrior', 'creatorgod', 'cyberse', 'dinosaur', 'divine', 'dragon', 'fairy', 'fiend', 'fish', 'illusion', 'insect', 'machine', 'plant', 'psychic', 'pyro', 'reptile', 'rock', 'seaserpent', 'spellcaster', 'thunder', 'warrior', 'windbeast', 'wyrm', 'zombie']
+        values: [
+            'aqua',
+            'beast',
+            'beastwarrior',
+            'creatorgod',
+            'cyberse',
+            'dinosaur',
+            'divine',
+            'dragon',
+            'fairy',
+            'fiend',
+            'fish',
+            'illusion',
+            'insect',
+            'machine',
+            'plant',
+            'psychic',
+            'pyro',
+            'reptile',
+            'rock',
+            'seaserpent',
+            'spellcaster',
+            'thunder',
+            'warrior',
+            'windbeast',
+            'wyrm',
+            'zombie'
+        ]
     },
     monsterTypes: {
         description: 'Monster types (JSON array, e.g. "effect", "fusion", "synchro")',
         type: 'json-array',
-        values: ['normal', 'effect', 'fusion', 'ritual', 'synchro', 'xyz', 'link', 'pendulum', 'tuner', 'spirit', 'union', 'gemini', 'flip', 'toon', 'special']
+        values: [
+            'normal',
+            'effect',
+            'fusion',
+            'ritual',
+            'synchro',
+            'xyz',
+            'link',
+            'pendulum',
+            'tuner',
+            'spirit',
+            'union',
+            'gemini',
+            'flip',
+            'toon',
+            'special'
+        ]
     },
     atk: {
         description: 'Attack power (number or "?")',
@@ -79,7 +138,16 @@ const COLUMN_DEFINITIONS = {
     linkMarkers: {
         description: 'Link marker positions (JSON array)',
         type: 'json-array',
-        values: ['top', 'bottom', 'left', 'right', 'top-left', 'top-right', 'bottom-left', 'bottom-right']
+        values: [
+            'top',
+            'bottom',
+            'left',
+            'right',
+            'top-left',
+            'top-right',
+            'bottom-left',
+            'bottom-right'
+        ]
     },
     pendulumScale: {
         description: 'Pendulum scale (0-13)',
@@ -97,13 +165,24 @@ const COLUMN_DEFINITIONS = {
     spellEffectType: {
         description: 'Spell card type',
         type: 'enum',
-        values: ['normal', 'quick', 'continuous', 'equip', 'field', 'ritual']
+        values: [
+            'normal',
+            'quick',
+            'continuous',
+            'equip',
+            'field',
+            'ritual'
+        ]
     },
     // Trap-specific
     trapEffectType: {
         description: 'Trap card type',
         type: 'enum',
-        values: ['normal', 'continuous', 'counter']
+        values: [
+            'normal',
+            'continuous',
+            'counter'
+        ]
     },
     // Detail fields
     supplementInfo: {
@@ -134,18 +213,46 @@ To use columns in search, specify them with --cols or cols= parameter:
 Column Reference:
 `);
     const categories = {
-        'Basic Information': ['cardType', 'name', 'nameModified', 'ruby', 'cardId', 'ciid', 'imgs', 'text'],
-        'Monster Fields': ['attribute', 'levelType', 'levelValue', 'race', 'monsterTypes', 'atk', 'def', 'linkMarkers', 'pendulumScale', 'pendulumText', 'isExtraDeck'],
-        'Spell/Trap Fields': ['spellEffectType', 'trapEffectType'],
-        'Supplementary Info': ['supplementInfo', 'supplementDate', 'pendulumSupplementInfo', 'pendulumSupplementDate']
+        'Basic Information': [
+            'cardType',
+            'name',
+            'nameModified',
+            'ruby',
+            'cardId',
+            'ciid',
+            'imgs',
+            'text'
+        ],
+        'Monster Fields': [
+            'attribute',
+            'levelType',
+            'levelValue',
+            'race',
+            'monsterTypes',
+            'atk',
+            'def',
+            'linkMarkers',
+            'pendulumScale',
+            'pendulumText',
+            'isExtraDeck'
+        ],
+        'Spell/Trap Fields': [
+            'spellEffectType',
+            'trapEffectType'
+        ],
+        'Supplementary Info': [
+            'supplementInfo',
+            'supplementDate',
+            'pendulumSupplementInfo',
+            'pendulumSupplementDate'
+        ]
     };
-    for (const [category, columns] of Object.entries(categories)) {
+    for (const [category, columns] of Object.entries(categories)){
         console.log(`\n${category}`);
         console.log('-'.repeat(category.length));
-        for (const col of columns) {
+        for (const col of columns){
             const def = COLUMN_DEFINITIONS[col];
-            if (!def)
-                continue;
+            if (!def) continue;
             console.log(`\n  ${col}`);
             console.log(`    Type: ${def.type}`);
             console.log(`    Desc: ${def.description}`);
@@ -240,15 +347,17 @@ Examples:
 `);
         process.exit(0);
     }
-    const proc = spawn('node', [scriptPath, ...args], {
+    const proc = spawn('node', [
+        scriptPath,
+        ...args
+    ], {
         stdio: 'inherit'
     });
-    proc.on('exit', (code) => {
+    proc.on('exit', (code)=>{
         process.exit(code || 0);
     });
 }
-main().catch(err => {
+main().catch((err)=>{
     console.error('Error:', err.message);
     process.exit(1);
 });
-//# sourceMappingURL=ygo_search.js.map

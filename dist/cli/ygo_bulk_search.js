@@ -45,61 +45,49 @@ Examples:
             const filterArray = JSON.parse(args[0]);
             if (Array.isArray(filterArray)) {
                 // Array format: ygo_bulk_search '[{...}, {...}]' cols=...
-                for (const item of filterArray) {
+                for (const item of filterArray){
                     if (typeof item === 'object' && item !== null) {
                         filters.push(item);
                     }
                 }
                 // Process remaining args as options
-                for (let i = 1; i < args.length; i++) {
+                for(let i = 1; i < args.length; i++){
                     const arg = args[i];
                     if (arg.includes('=')) {
                         const [key, value] = arg.split('=', 2);
                         if (key === 'cols') {
                             parsedOptions.cols = value.split(',');
-                        }
-                        else if (key === 'mode') {
+                        } else if (key === 'mode') {
                             parsedOptions.mode = value;
-                        }
-                        else if (key === 'includeRuby') {
+                        } else if (key === 'includeRuby') {
                             parsedOptions.includeRuby = value !== 'false';
-                        }
-                        else if (key === 'flagAutoPend') {
+                        } else if (key === 'flagAutoPend') {
                             parsedOptions.flagAutoPend = value !== 'false';
-                        }
-                        else if (key === 'flagAutoSupply') {
+                        } else if (key === 'flagAutoSupply') {
                             parsedOptions.flagAutoSupply = value !== 'false';
-                        }
-                        else if (key === 'flagAutoModify') {
+                        } else if (key === 'flagAutoModify') {
                             parsedOptions.flagAutoModify = value !== 'false';
-                        }
-                        else if (key === 'flagAllowWild') {
+                        } else if (key === 'flagAllowWild') {
                             parsedOptions.flagAllowWild = value !== 'false';
-                        }
-                        else if (key === 'flagNearly') {
+                        } else if (key === 'flagNearly') {
                             parsedOptions.flagNearly = value === 'true';
-                        }
-                        else {
+                        } else {
                             passthroughOptions.push(arg);
                         }
-                    }
-                    else {
+                    } else {
                         passthroughOptions.push(arg);
                     }
                 }
-            }
-            else {
+            } else {
                 throw new Error('First argument must be an array of filters');
             }
-        }
-        catch (e) {
+        } catch (e) {
             console.error('Invalid JSON array format:', e instanceof Error ? e.message : e);
             process.exit(1);
         }
-    }
-    else {
+    } else {
         // Space-separated format: ygo_bulk_search '{...}' '{...}' cols=...
-        for (const arg of args) {
+        for (const arg of args){
             if (arg.startsWith('{') || arg.startsWith('[')) {
                 // This is a JSON filter
                 try {
@@ -107,45 +95,34 @@ Examples:
                     if (typeof parsed === 'object' && parsed !== null) {
                         filters.push(parsed);
                     }
-                }
-                catch (e) {
+                } catch (e) {
                     console.error('Invalid filter JSON:', arg);
                     process.exit(1);
                 }
-            }
-            else if (arg.includes('=')) {
+            } else if (arg.includes('=')) {
                 // Parse options
                 const [key, value] = arg.split('=', 2);
                 if (key === 'cols') {
                     parsedOptions.cols = value.split(',');
-                }
-                else if (key === 'mode') {
+                } else if (key === 'mode') {
                     parsedOptions.mode = value;
-                }
-                else if (key === 'includeRuby') {
+                } else if (key === 'includeRuby') {
                     parsedOptions.includeRuby = value !== 'false';
-                }
-                else if (key === 'flagAutoPend') {
+                } else if (key === 'flagAutoPend') {
                     parsedOptions.flagAutoPend = value !== 'false';
-                }
-                else if (key === 'flagAutoSupply') {
+                } else if (key === 'flagAutoSupply') {
                     parsedOptions.flagAutoSupply = value !== 'false';
-                }
-                else if (key === 'flagAutoModify') {
+                } else if (key === 'flagAutoModify') {
                     parsedOptions.flagAutoModify = value !== 'false';
-                }
-                else if (key === 'flagAllowWild') {
+                } else if (key === 'flagAllowWild') {
                     parsedOptions.flagAllowWild = value !== 'false';
-                }
-                else if (key === 'flagNearly') {
+                } else if (key === 'flagNearly') {
                     parsedOptions.flagNearly = value === 'true';
-                }
-                else {
+                } else {
                     // Pass through unknown options
                     passthroughOptions.push(arg);
                 }
-            }
-            else {
+            } else {
                 passthroughOptions.push(arg);
             }
         }
@@ -155,23 +132,25 @@ Examples:
         process.exit(1);
     }
     // Convert filters to query format expected by bulk-search-cards
-    const queries = filters.map(filter => ({
-        filter,
-        ...parsedOptions
-    }));
+    const queries = filters.map((filter)=>({
+            filter,
+            ...parsedOptions
+        }));
     const bulkSearchArgs = [
         JSON.stringify(queries),
         ...passthroughOptions
     ];
-    const proc = spawn('node', [scriptPath, ...bulkSearchArgs], {
+    const proc = spawn('node', [
+        scriptPath,
+        ...bulkSearchArgs
+    ], {
         stdio: 'inherit'
     });
-    proc.on('exit', (code) => {
+    proc.on('exit', (code)=>{
         process.exit(code || 0);
     });
 }
-main().catch(err => {
+main().catch((err)=>{
     console.error('Error:', err.message);
     process.exit(1);
 });
-//# sourceMappingURL=ygo_bulk_search.js.map
