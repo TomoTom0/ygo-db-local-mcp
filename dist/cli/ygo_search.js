@@ -360,16 +360,26 @@ Environment:
   YGO_OUTPUT_DIR            Default output directory
 
 Examples:
+
+Subcommands:
   ygo_search columns
+
+Basic Searches:
   ygo_search --name "青眼の白龍"
   ygo_search --name "青眼の白龍" --cols name,cardId,text
-  ygo_search --text "*破壊*" --max 50 --sort atk:desc
   ygo_search --cardType trap --sort name --cols name,text
+
+Advanced Filtering:
+  ygo_search --text "*破壊*" --max 50 --sort atk:desc
   ygo_search --race dragon --atk 3000 --sort levelValue:asc --cols name,atk,def,race
-  ygo_search --cardId 19723,21820,21207 --cols name,cardId        # Multiple cardIds (comma-separated)
-  ygo_search --monsterTypes '["effect","fusion"]' --cols name      # Array parameter (JSON format)
-  ygo_search name=青眼の白龍 cols=name,cardId,text                # key=value format
-  ygo_search '{"name":"青眼の白龍"}' cols=name,cardId,text        # JSON format
+
+Array Parameters:
+  ygo_search --cardId 19723,21820,21207 --cols name,cardId
+  ygo_search --monsterTypes '["effect","fusion"]' --cols name
+
+Alternative Formats:
+  ygo_search name=青眼の白龍 cols=name,cardId,text
+  ygo_search '{"name":"青眼の白龍"}' cols=name,cardId,text
 `);
         process.exit(0);
     }
