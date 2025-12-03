@@ -6,13 +6,196 @@ import url from 'url';
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const scriptPath = path.join(__dirname, '..', 'search-cards.js');
 
+const COLUMN_DEFINITIONS = {
+  // Basic information
+  cardType: {
+    description: 'Card type (monster, spell, trap)',
+    type: 'enum',
+    values: ['monster', 'spell', 'trap']
+  },
+  name: {
+    description: 'Official card name',
+    type: 'string',
+    example: '青眼の白龍'
+  },
+  nameModified: {
+    description: 'Normalized name for search (whitespace/symbols removed, hiragana→katakana)',
+    type: 'string',
+    example: '青眼ノ白龍'
+  },
+  ruby: {
+    description: 'Card name reading (furigana)',
+    type: 'string',
+    example: 'ブルーアイズ・ホワイト・ドラゴン'
+  },
+  cardId: {
+    description: 'Unique card identifier',
+    type: 'string',
+    example: '4007'
+  },
+  ciid: {
+    description: 'Additional identifier',
+    type: 'string'
+  },
+  imgs: {
+    description: 'Card images (JSON array as string)',
+    type: 'json-array'
+  },
+  text: {
+    description: 'Card effect text',
+    type: 'string'
+  },
+  // Monster-specific
+  attribute: {
+    description: 'Monster attribute',
+    type: 'enum',
+    values: ['dark', 'divine', 'earth', 'fire', 'light', 'water', 'wind']
+  },
+  levelType: {
+    description: 'Level type (level, rank, or link)',
+    type: 'enum',
+    values: ['level', 'rank', 'link']
+  },
+  levelValue: {
+    description: 'Level/Rank/Link value (1-12)',
+    type: 'number'
+  },
+  race: {
+    description: 'Monster race/type',
+    type: 'enum',
+    values: ['aqua', 'beast', 'beastwarrior', 'creatorgod', 'cyberse', 'dinosaur', 'divine', 'dragon', 'fairy', 'fiend', 'fish', 'illusion', 'insect', 'machine', 'plant', 'psychic', 'pyro', 'reptile', 'rock', 'seaserpent', 'spellcaster', 'thunder', 'warrior', 'windbeast', 'wyrm', 'zombie']
+  },
+  monsterTypes: {
+    description: 'Monster types (JSON array, e.g. "effect", "fusion", "synchro")',
+    type: 'json-array',
+    values: ['normal', 'effect', 'fusion', 'ritual', 'synchro', 'xyz', 'link', 'pendulum', 'tuner', 'spirit', 'union', 'gemini', 'flip', 'toon', 'special']
+  },
+  atk: {
+    description: 'Attack power (number or "?")',
+    type: 'string|number'
+  },
+  def: {
+    description: 'Defense power (number or "?")',
+    type: 'string|number'
+  },
+  linkMarkers: {
+    description: 'Link marker positions (JSON array)',
+    type: 'json-array',
+    values: ['top', 'bottom', 'left', 'right', 'top-left', 'top-right', 'bottom-left', 'bottom-right']
+  },
+  pendulumScale: {
+    description: 'Pendulum scale (0-13)',
+    type: 'number'
+  },
+  pendulumText: {
+    description: 'Pendulum effect text',
+    type: 'string'
+  },
+  isExtraDeck: {
+    description: 'Whether card belongs to Extra Deck (for fusion/synchro/xyz/link)',
+    type: 'boolean'
+  },
+  // Spell-specific
+  spellEffectType: {
+    description: 'Spell card type',
+    type: 'enum',
+    values: ['normal', 'quick', 'continuous', 'equip', 'field', 'ritual']
+  },
+  // Trap-specific
+  trapEffectType: {
+    description: 'Trap card type',
+    type: 'enum',
+    values: ['normal', 'continuous', 'counter']
+  },
+  // Detail fields
+  supplementInfo: {
+    description: 'Supplementary card effect information',
+    type: 'string'
+  },
+  supplementDate: {
+    description: 'Last update date of supplement info (YYYY-MM-DD)',
+    type: 'date'
+  },
+  pendulumSupplementInfo: {
+    description: 'Supplementary pendulum effect information',
+    type: 'string'
+  },
+  pendulumSupplementDate: {
+    description: 'Last update date of pendulum supplement info (YYYY-MM-DD)',
+    type: 'date'
+  }
+};
+
+function showColumns() {
+  console.log(`Available Card Columns
+========================
+
+To use columns in search, specify them with --cols or cols= parameter:
+  ygo_search --name "青眼" --cols name,ruby,atk,def
+  ygo_search name=ドラゴン cols=name,race,levelValue
+
+Column Reference:
+`);
+
+  const categories = {
+    'Basic Information': ['cardType', 'name', 'nameModified', 'ruby', 'cardId', 'ciid', 'imgs', 'text'],
+    'Monster Fields': ['attribute', 'levelType', 'levelValue', 'race', 'monsterTypes', 'atk', 'def', 'linkMarkers', 'pendulumScale', 'pendulumText', 'isExtraDeck'],
+    'Spell/Trap Fields': ['spellEffectType', 'trapEffectType'],
+    'Supplementary Info': ['supplementInfo', 'supplementDate', 'pendulumSupplementInfo', 'pendulumSupplementDate']
+  };
+
+  for (const [category, columns] of Object.entries(categories)) {
+    console.log(`\n${category}`);
+    console.log('-'.repeat(category.length));
+    
+    for (const col of columns) {
+      const def = COLUMN_DEFINITIONS[col as keyof typeof COLUMN_DEFINITIONS];
+      if (!def) continue;
+      
+      console.log(`\n  ${col}`);
+      console.log(`    Type: ${def.type}`);
+      console.log(`    Desc: ${def.description}`);
+      
+      if ('example' in def && def.example) {
+        console.log(`    Ex:   ${def.example}`);
+      }
+      
+      if ('values' in def && def.values && def.values.length > 0) {
+        const vals = def.values.slice(0, 5).join(', ');
+        const suffix = def.values.length > 5 ? '...' : '';
+        console.log(`    Vals: ${vals}${suffix}`);
+      }
+    }
+  }
+
+  console.log(`
+Common Column Sets:
+  Basic:     name,cardId
+  Full:      name,cardId,text,atk,def,race,attribute
+  Monster:   name,race,attribute,levelValue,atk,def
+  Spell:     name,spellEffectType,text
+  Trap:      name,trapEffectType,text
+  Details:   name,supplementInfo,supplementDate
+`);
+}
+
 async function main() {
   const args = process.argv.slice(2);
   
+  // Handle subcommands
+  if (args.length > 0 && (args[0] === 'columns' || args[0] === '--columns')) {
+    showColumns();
+    process.exit(0);
+  }
+  
   if (args.length === 0 || args[0] === '--help' || args[0] === '-h') {
-    console.log(`Usage: ygo_search [options]
+    console.log(`Usage: ygo_search [command] [options]
 
 Search Yu-Gi-Oh cards database.
+
+Commands:
+  columns               Show all available columns and their descriptions
+  (no command)          Search cards (default)
 
 Filter Options (at least one required):
   --name <value>            Card name filter
@@ -58,6 +241,7 @@ Environment:
   YGO_OUTPUT_DIR            Default output directory
 
 Examples:
+  ygo_search columns
   ygo_search --name "青眼"
   ygo_search --name "青眼" --cols name,cardId,text
   ygo_search --text "*破壊*" --max 50 --sort atk:desc
