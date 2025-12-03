@@ -349,15 +349,12 @@ Search Options:
   --flagAutoSupply <bool>   Auto-include supplement info (default: true)
   --flagAutoRuby <bool>     Auto-include ruby for name (default: true)
 
-Alternative key=value Format:
+Alternative Formats:
   All options can also be specified as key=value:
   name=青眼 text=*破壊* cols=name,cardId max=50 sort=atk:desc
 
-Legacy JSON Format (still supported):
+  Or as JSON format:
   ygo_search '{"name":"青眼"}' cols=name,cardId
-
-Environment:
-  YGO_OUTPUT_DIR            Default output directory
 
 Examples:
 
