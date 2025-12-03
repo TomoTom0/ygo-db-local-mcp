@@ -200,7 +200,7 @@ Commands:
 Filter Options (at least one required):
   --name <value>            Card name filter
   --text <value>            Card text filter
-  --cardId <value>          Card ID filter
+  --cardId <value>          Card ID filter (supports: comma-separated values or JSON array)
   --cardType <value>        Card type filter (monster, spell, trap)
   --race <value>            Race/type filter (dragon, warrior, etc.)
   --attribute <value>       Attribute filter (LIGHT, DARK, etc.)
@@ -212,6 +212,9 @@ Filter Options (at least one required):
   --ruby <value>            Ruby (reading) filter
   --linkValue <value>       Link value filter
   --linkArrows <value>      Link arrows filter
+  --monsterTypes <value>    Monster types (JSON array format required, e.g. '["effect","fusion"]')
+  --linkMarkers <value>     Link marker positions (JSON array format required)
+  --imgs <value>            Card images (JSON array format required)
 
 Output Options:
   --cols <col1,col2,...>    Columns to return (comma-separated)
@@ -242,13 +245,15 @@ Environment:
 
 Examples:
   ygo_search columns
-  ygo_search --name "青眼"
-  ygo_search --name "青眼" --cols name,cardId,text
+  ygo_search --name "青眼の白龍"
+  ygo_search --name "青眼の白龍" --cols name,cardId,text
   ygo_search --text "*破壊*" --max 50 --sort atk:desc
   ygo_search --cardType trap --sort name --cols name,text
-  ygo_search --race dragon --atk 3000 --sort levelValue:asc
-  ygo_search name=青眼 cols=name,cardId,text            # key=value format
-  ygo_search '{"name":"青眼"}' cols=name,cardId,text    # JSON format
+  ygo_search --race dragon --atk 3000 --sort levelValue:asc --cols name,atk,def,race
+  ygo_search --cardId 19723,21820,21207 --cols name,cardId        # Multiple cardIds (comma-separated)
+  ygo_search --monsterTypes '["effect","fusion"]' --cols name      # Array parameter (JSON format)
+  ygo_search name=青眼の白龍 cols=name,cardId,text                # key=value format
+  ygo_search '{"name":"青眼の白龍"}' cols=name,cardId,text        # JSON format
 `);
     process.exit(0);
   }

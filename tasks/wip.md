@@ -1,12 +1,14 @@
 # Work In Progress
 
 ## Currently Working On
-なし
+ygo_searchコマンドのarrayパラメータ実装
 
 ## Status
-- Branch: dev
-- Last Updated: 2025-11-21
-- Current Task: なし
+- Branch: feature/bulk-search-and-columns
+- Last Updated: 2025-12-04
+- Current Task: ygo_searchの未実装パラメータを実装する
 
-## Ready for Review
-cardIdパターンのカード名検証・修正機能が完了し、コミット待ち。
+## Issue
+ygo_searchのヘルプには複数のarrayパラメータ（monsterTypes, linkMarkers, imgs等）が記載されているが、実装されていない。
+- `--monsterTypes` が Unknown flag エラーになる
+- JSON形式でもkey=value形式でも使用できない

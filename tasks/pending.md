@@ -45,4 +45,15 @@
 - **Decision By**: Based on user feedback
 
 ## Blocked Tasks
-（現在ブロックされているタスクはありません）
+
+### ygo_searchのparameter実装の問題
+- **Status**: ブロック中
+- **Issues**:
+  1. ヘルプに記載されているarrayパラメータが実装されていない
+     - monsterTypes, linkMarkers, imgs
+  2. 複数値パラメータのカンマ区切り形式が機能していない
+     - `--cardId 19723,21820,21207` は動作しない
+     - JSON配列形式 `'{"cardId": ["19723", "21820", "21207"]}'` のみ動作
+- **Root Cause**: ygo_search.tsのargument parsingロジックが不完全
+- **Impact**: ユーザーがヘルプに従ってコマンドを実行しても失敗する
+- **Next Action**: src/cli/ygo_search.tsを修正してすべてのパラメータに対応

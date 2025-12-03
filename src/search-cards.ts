@@ -215,6 +215,39 @@ function parseBooleanValue(value: string, flagName: string, defaultValue: boolea
   process.exit(2)
 }
 
+// Parse array parameter - supports both JSON array format and comma-separated values
+function parseArrayValue(value: string): string[] {
+  // Try to parse as JSON first
+  if (value.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(value)
+      if (Array.isArray(parsed)) {
+        return parsed.map(v => String(v))
+      }
+    } catch (e) {
+      // Fall through to comma-separated parsing
+    }
+  }
+
+  // Try to parse as JSON object with array value
+  if (value.startsWith('{')) {
+    try {
+      const parsed = JSON.parse(value)
+      // Look for the first array value in the object
+      for (const [, val] of Object.entries(parsed)) {
+        if (Array.isArray(val)) {
+          return val.map(v => String(v))
+        }
+      }
+    } catch (e) {
+      // Fall through to comma-separated parsing
+    }
+  }
+
+  // Parse as comma-separated values
+  return value.split(',').map(v => v.trim()).filter(v => v.length > 0)
+}
+
 // Parse command line arguments, supporting both --flag format and key=value format
 function parseArgs(args: string[]): {
   filterRaw: Record<string, any>
@@ -246,7 +279,10 @@ function parseArgs(args: string[]): {
   let raw = false
 
   // Filter field flags
-  const filterFlags = ['name', 'text', 'cardId', 'cardType', 'race', 'attribute', 'atk', 'def', 'level', 'levelValue', 'pendulumScale', 'ruby', 'linkValue', 'linkArrows']
+  const filterFlags = ['name', 'text', 'cardId', 'cardType', 'race', 'attribute', 'atk', 'def', 'level', 'levelValue', 'pendulumScale', 'ruby', 'linkValue', 'linkArrows', 'monsterTypes', 'linkMarkers', 'imgs']
+
+  // Array parameter fields that need JSON parsing or comma-separated support
+  const arrayFields = ['cardId', 'monsterTypes', 'linkMarkers', 'imgs']
 
   let i = 0
   while (i < args.length) {
@@ -270,7 +306,12 @@ function parseArgs(args: string[]): {
       }
 
       if (filterFlags.includes(flagName)) {
-        filterRaw[flagName] = nextArg
+        // Parse array fields properly
+        if (arrayFields.includes(flagName)) {
+          filterRaw[flagName] = parseArrayValue(nextArg)
+        } else {
+          filterRaw[flagName] = nextArg
+        }
         i += 2
         continue
       }
@@ -326,7 +367,12 @@ function parseArgs(args: string[]): {
 
       // Check if it's a filter field
       if (filterFlags.includes(key)) {
-        filterRaw[key] = value
+        // Parse array fields properly
+        if (arrayFields.includes(key)) {
+          filterRaw[key] = parseArrayValue(value)
+        } else {
+          filterRaw[key] = value
+        }
         i++
         continue
       }
