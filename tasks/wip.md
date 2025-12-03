@@ -1,14 +1,19 @@
 # Work In Progress
 
 ## Currently Working On
-ygo_searchコマンドのarrayパラメータ実装
+なし
 
 ## Status
 - Branch: feature/bulk-search-and-columns
 - Last Updated: 2025-12-04
-- Current Task: ygo_searchの未実装パラメータを実装する
+- Last Commit: 4a87ab2 (ygo_searchのパラメータ処理と例を改善)
 
-## Issue
-ygo_searchのヘルプには複数のarrayパラメータ（monsterTypes, linkMarkers, imgs等）が記載されているが、実装されていない。
-- `--monsterTypes` が Unknown flag エラーになる
-- JSON形式でもkey=value形式でも使用できない
+## Completed Tasks
+✅ ygo_searchのヘルプの例を修正（青眼→青眼の白龍など）
+✅ カンマ区切り形式（--cardId 19723,21820,21207）をサポート
+✅ arrayパラメータ（monsterTypes, linkMarkers, imgs）のparse処理を実装
+✅ parseArrayValue関数でJSON配列とカンマ区切り形式の両方に対応
+
+## Next Tasks
+- JSON配列フィールドの検索ロジック実装（monsterTypesなど）
+  - valueMatches関数の修正が必要

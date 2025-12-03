@@ -46,14 +46,17 @@
 
 ## Blocked Tasks
 
-### ygo_searchのparameter実装の問題
+### ygo_searchのJSON配列フィールドの検索ロジック実装
 - **Status**: ブロック中
-- **Issues**:
-  1. ヘルプに記載されているarrayパラメータが実装されていない
-     - monsterTypes, linkMarkers, imgs
-  2. 複数値パラメータのカンマ区切り形式が機能していない
-     - `--cardId 19723,21820,21207` は動作しない
-     - JSON配列形式 `'{"cardId": ["19723", "21820", "21207"]}'` のみ動作
-- **Root Cause**: ygo_search.tsのargument parsingロジックが不完全
-- **Impact**: ユーザーがヘルプに従ってコマンドを実行しても失敗する
-- **Next Action**: src/cli/ygo_search.tsを修正してすべてのパラメータに対応
+- **Issue**: monsterTypes, linkMarkers, imgs などのJSON配列フィールドの検索に未対応
+  - `--monsterTypes '["effect","fusion"]'` のパラメータは受け取れる
+  - しかし、実際の検索ロジック側で JSON 配列を解析・マッチングする処理がない
+- **Root Cause**: valueMatches関数がJSON配列フィールドに対応していない
+  - データファイルではmonsterTypesが JSON文字列（"["effect","fusion"]"）として格納されている
+  - 現在の検索ロジックではこの文字列と直接マッチングしようとしている
+- **Impact**: arrayパラメータは受け取れるが、マッチング処理がないため結果が返らない
+- **Fix Needed**:
+  1. valueMatches関数でJSON配列フィールドの検索に対応する
+  2. データの JSON 配列を解析してからマッチング判定を行う
+  3. "or" 条件で複数値のいずれかに該当するかチェックする
+- **Related Commits**: 4a87ab2 (parsingロジックは実装済み)
