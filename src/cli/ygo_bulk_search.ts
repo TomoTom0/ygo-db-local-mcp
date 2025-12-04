@@ -6,6 +6,35 @@ import url from 'url';
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const scriptPath = path.join(__dirname, '..', 'bulk-search-cards.js');
 
+// ヘルパー関数: オプション文字列をパースして parsedOptions に格納
+function parseOption(
+  key: string,
+  value: string,
+  parsedOptions: Record<string, any>,
+  passthroughOptions: string[]
+): void {
+  if (key === 'cols') {
+    parsedOptions.cols = value.split(',');
+  } else if (key === 'mode') {
+    parsedOptions.mode = value;
+  } else if (key === 'includeRuby') {
+    parsedOptions.includeRuby = value !== 'false';
+  } else if (key === 'flagAutoPend') {
+    parsedOptions.flagAutoPend = value !== 'false';
+  } else if (key === 'flagAutoSupply') {
+    parsedOptions.flagAutoSupply = value !== 'false';
+  } else if (key === 'flagAutoModify') {
+    parsedOptions.flagAutoModify = value !== 'false';
+  } else if (key === 'flagAllowWild') {
+    parsedOptions.flagAllowWild = value !== 'false';
+  } else if (key === 'flagNearly') {
+    parsedOptions.flagNearly = value === 'true';
+  } else {
+    // Pass through unknown options
+    passthroughOptions.push(`${key}=${value}`);
+  }
+}
+
 async function main() {
   const args = process.argv.slice(2);
   
@@ -60,25 +89,7 @@ Examples:
           const arg = args[i];
           if (arg.includes('=')) {
             const [key, value] = arg.split('=', 2);
-            if (key === 'cols') {
-              parsedOptions.cols = value.split(',');
-            } else if (key === 'mode') {
-              parsedOptions.mode = value;
-            } else if (key === 'includeRuby') {
-              parsedOptions.includeRuby = value !== 'false';
-            } else if (key === 'flagAutoPend') {
-              parsedOptions.flagAutoPend = value !== 'false';
-            } else if (key === 'flagAutoSupply') {
-              parsedOptions.flagAutoSupply = value !== 'false';
-            } else if (key === 'flagAutoModify') {
-              parsedOptions.flagAutoModify = value !== 'false';
-            } else if (key === 'flagAllowWild') {
-              parsedOptions.flagAllowWild = value !== 'false';
-            } else if (key === 'flagNearly') {
-              parsedOptions.flagNearly = value === 'true';
-            } else {
-              passthroughOptions.push(arg);
-            }
+            parseOption(key, value, parsedOptions, passthroughOptions);
           } else {
             passthroughOptions.push(arg);
           }
@@ -107,26 +118,7 @@ Examples:
       } else if (arg.includes('=')) {
         // Parse options
         const [key, value] = arg.split('=', 2);
-        if (key === 'cols') {
-          parsedOptions.cols = value.split(',');
-        } else if (key === 'mode') {
-          parsedOptions.mode = value;
-        } else if (key === 'includeRuby') {
-          parsedOptions.includeRuby = value !== 'false';
-        } else if (key === 'flagAutoPend') {
-          parsedOptions.flagAutoPend = value !== 'false';
-        } else if (key === 'flagAutoSupply') {
-          parsedOptions.flagAutoSupply = value !== 'false';
-        } else if (key === 'flagAutoModify') {
-          parsedOptions.flagAutoModify = value !== 'false';
-        } else if (key === 'flagAllowWild') {
-          parsedOptions.flagAllowWild = value !== 'false';
-        } else if (key === 'flagNearly') {
-          parsedOptions.flagNearly = value === 'true';
-        } else {
-          // Pass through unknown options
-          passthroughOptions.push(arg);
-        }
+        parseOption(key, value, parsedOptions, passthroughOptions);
       } else {
         passthroughOptions.push(arg);
       }

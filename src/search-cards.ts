@@ -453,10 +453,15 @@ function parseArgs(args: string[]): {
     }
 
     // Try to parse as JSON filter (legacy format)
-    try {
-      const parsed = JSON.parse(arg)
-      Object.assign(filterRaw, parsed)
-    } catch {
+    if (arg.startsWith('{')) {
+      try {
+        const parsed = JSON.parse(arg)
+        Object.assign(filterRaw, parsed)
+      } catch {
+        console.error(`Invalid JSON filter: ${arg}`)
+        process.exit(2)
+      }
+    } else {
       console.error(`Invalid argument: ${arg}`)
       process.exit(2)
     }
